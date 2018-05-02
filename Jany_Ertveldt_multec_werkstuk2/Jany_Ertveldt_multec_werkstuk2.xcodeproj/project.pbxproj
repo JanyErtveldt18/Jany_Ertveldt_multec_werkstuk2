@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DF1741502098BA470013CD83 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF17414F2098BA470013CD83 /* TableViewController.swift */; };
 		DF82E62C209365530071F9A6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF82E62B209365530071F9A6 /* AppDelegate.swift */; };
 		DF82E62E209365530071F9A6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF82E62D209365530071F9A6 /* ViewController.swift */; };
 		DF82E631209365530071F9A6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF82E62F209365530071F9A6 /* Main.storyboard */; };
@@ -15,6 +16,7 @@
 		DF82E639209365540071F9A6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF82E637209365540071F9A6 /* LaunchScreen.storyboard */; };
 		DF82E644209365540071F9A6 /* Jany_Ertveldt_multec_werkstuk2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF82E643209365540071F9A6 /* Jany_Ertveldt_multec_werkstuk2Tests.swift */; };
 		DF82E64F209365540071F9A6 /* Jany_Ertveldt_multec_werkstuk2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF82E64E209365540071F9A6 /* Jany_Ertveldt_multec_werkstuk2UITests.swift */; };
+		DFE6C146209A0DCB003DC297 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE6C145209A0DCB003DC297 /* DetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DF17414F2098BA470013CD83 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		DF82E628209365530071F9A6 /* Jany_Ertveldt_multec_werkstuk2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jany_Ertveldt_multec_werkstuk2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF82E62B209365530071F9A6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF82E62D209365530071F9A6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -49,6 +52,7 @@
 		DF82E64A209365540071F9A6 /* Jany_Ertveldt_multec_werkstuk2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Jany_Ertveldt_multec_werkstuk2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF82E64E209365540071F9A6 /* Jany_Ertveldt_multec_werkstuk2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jany_Ertveldt_multec_werkstuk2UITests.swift; sourceTree = "<group>"; };
 		DF82E650209365540071F9A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DFE6C145209A0DCB003DC297 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,9 +103,11 @@
 		DF82E62A209365530071F9A6 /* Jany_Ertveldt_multec_werkstuk2 */ = {
 			isa = PBXGroup;
 			children = (
+				DF17414F2098BA470013CD83 /* TableViewController.swift */,
 				DF82E62B209365530071F9A6 /* AppDelegate.swift */,
 				DF82E62D209365530071F9A6 /* ViewController.swift */,
 				DF82E62F209365530071F9A6 /* Main.storyboard */,
+				DFE6C145209A0DCB003DC297 /* DetailViewController.swift */,
 				DF82E635209365540071F9A6 /* Assets.xcassets */,
 				DF82E637209365540071F9A6 /* LaunchScreen.storyboard */,
 				DF82E63A209365540071F9A6 /* Info.plist */,
@@ -261,7 +267,9 @@
 			files = (
 				DF82E634209365530071F9A6 /* Jany_Ertveldt_multec_werkstuk2.xcdatamodeld in Sources */,
 				DF82E62E209365530071F9A6 /* ViewController.swift in Sources */,
+				DFE6C146209A0DCB003DC297 /* DetailViewController.swift in Sources */,
 				DF82E62C209365530071F9A6 /* AppDelegate.swift in Sources */,
+				DF1741502098BA470013CD83 /* TableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

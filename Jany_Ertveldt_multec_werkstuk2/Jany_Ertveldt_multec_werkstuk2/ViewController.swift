@@ -37,35 +37,37 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             
             // Save Changes
             try managedContext.save()
-            //laadVelloDataIn()
+            
         }
         catch{
             fatalError("Failed to delete stations \(error)")
             
         }
+        laadVelloDataIn()
         
        
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        locationManager.requestAlwaysAuthorization()
+        if CLLocationManager.locationServicesEnabled(){
+            locationManager.startUpdatingLocation()
+        }
         laadVelloDataIn()
     }
 
     func laadVelloDataIn(){
         print("laadVelloDataIn")
         //Vragen aan de gebruiker voor toegang tot locatie
-        locationManager.requestAlwaysAuthorization()
-        if CLLocationManager.locationServicesEnabled(){
-            locationManager.startUpdatingLocation()
-        }
+        
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate
             else{
                 return
         }
         let managedContext = appDelegate.persistentContainer.viewContext
+        
         let url = URL(string: "https://api.jcdecaux.com/vls/v1/stations?apiKey=6d5071ed0d0b3b68462ad73df43fd9e5479b03d6&contract=Bruxelles-Capitale")
         let urlRequest = URLRequest(url: url!)
         
@@ -97,7 +99,6 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 //Aantal stations van villo, het zijn er 348
                 //print((jsonVillo?.count)!)
                 for villoStation in villoData {
-                    
                     //Stationsnaam
                     let station = NSEntityDescription.insertNewObject(forEntityName: "Station", into: managedContext) as! Station
                     station.naam = villoStation["name"] as? String
@@ -111,49 +112,20 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                     station.beschikbareFietsen = (villoStation["available_bikes"] as? Int16)!
                     
                     
-                    print("Dit is de stationsnaam: \(station.naam!) met latitude \(station.latitude) en longitude \(station.longitude)")
+                    //print("Dit is de stationsnaam: \(station.naam!) met latitude \(station.latitude) en longitude \(station.longitude)")
                     do {
                         try managedContext.save()
                     } catch {
                         fatalError("Failure to save context: \(error)")
                     }
-                    
-                    
-                    
-                    //                    //Naam van het station
-                    //                    let nameStationJSON = villoStation["name"] as? String
-                    //                    print(nameStationJSON!)
-                    //
-                    //                    //Coördinaten locatie van het station
-                    //                    let coordinatesVilloStation = villoStation["position"] as? [String:AnyObject]
-                    //                    let latitude = coordinatesVilloStation!["lat"] as? Double
-                    //                    let longitude = coordinatesVilloStation!["lng"] as? Double
-                    //                    print(latitude!)
-                    //                    print(longitude!)
-                    //
-                    //                    //Aantal fietsen per station
-                    //                    let bike_stands = villoStation["bike_stands"] as? Int
-                    //                     print(bike_stands!)
-                    //
-                    //                    //Aantal beschikbare fietsen per station
-                    //                    let available_bike_stands = villoStation["available_bike_stands"] as? Int
-                    //                    print(available_bike_stands!)
-                    //
-                    //
-                    //                    //Annotation op coordinaten locatie van het station plaatsen
-                    //                    let annotation = MKPointAnnotation()
-                    //                    annotation.title = villoStation["name"] as? String
-                    //                    annotation.coordinate = CLLocationCoordinate2D(latitude: latitude! , longitude: longitude! )
-                    //                    self.mijnMapview.addAnnotation(annotation)
-                    
                 }
                 let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
                 do {
                     self.opgehaaldeStations = try managedContext.fetch(stationFetch) as! [Station]
-                    print ("uit coredata")
-                    print(self.opgehaaldeStations[0].naam!)
-                    print(self.opgehaaldeStations[1].naam!)
-                    print(self.opgehaaldeStations[2].naam!)
+//                    print ("uit coredata")
+//                    print(self.opgehaaldeStations[0].naam!)
+//                    print(self.opgehaaldeStations[1].naam!)
+//                    print(self.opgehaaldeStations[2].naam!)
                 }
                 catch {
                     fatalError("Failed to fetch stations: \(error)")

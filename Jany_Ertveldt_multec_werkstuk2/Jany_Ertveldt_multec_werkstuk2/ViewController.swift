@@ -16,11 +16,24 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
     var locationManager = CLLocationManager()
     var location : CLLocation!
     @IBOutlet weak var mijnMapview: MKMapView!
-   
+    @IBOutlet weak var lblLaatstBijgewerkt: UILabel!
+    
+    
+    //let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    let url = URL(string: "https://api.jcdecaux.com/vls/v1/stations?apiKey=6d5071ed0d0b3b68462ad73df43fd9e5479b03d6&contract=Bruxelles-Capitale")
+    let managedContext = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext
+    
+    
+    
+    
     
 //    https://stackoverflow.com/questions/39920792/deleting-all-data-in-a-core-data-entity-in-swift-3
     @IBAction func btnRefreshCoreData(_ sender: UIBarButtonItem) {
         print("refresh core data")
+        //Annotations wissen
+        let alleAnnotationsOpDeMap = mijnMapview.annotations
+        mijnMapview.removeAnnotations(alleAnnotationsOpDeMap)
+        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate
             else{
                 return
@@ -33,19 +46,15 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             
             for station in opgehaaldeStations {
                 managedContext.delete(station)
+                try managedContext.save()
             }
-            
-            // Save Changes
-            try managedContext.save()
-            
+             laadVelloDataIn()
         }
         catch{
             fatalError("Failed to delete stations \(error)")
             
         }
-        laadVelloDataIn()
-        
-       
+        updateTijdBijRefresh()
     }
     
     override func viewDidLoad() {
@@ -54,21 +63,28 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
         if CLLocationManager.locationServicesEnabled(){
             locationManager.startUpdatingLocation()
         }
-        laadVelloDataIn()
+        
+        
+        
+        let launchedBefore = UserDefaults.standard.bool(forKey: "launchedBefore")
+        if launchedBefore  {
+            maakAnnotaionsAanOpMap()
+            print("Not first launch.")
+        } else {
+            laadVelloDataIn()
+            
+            print("First launch, setting UserDefault.")
+            UserDefaults.standard.set(true, forKey: "launchedBefore")
+        }
+
     }
 
     func laadVelloDataIn(){
+        
         print("laadVelloDataIn")
         //Vragen aan de gebruiker voor toegang tot locatie
         
         
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            else{
-                return
-        }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        let url = URL(string: "https://api.jcdecaux.com/vls/v1/stations?apiKey=6d5071ed0d0b3b68462ad73df43fd9e5479b03d6&contract=Bruxelles-Capitale")
         let urlRequest = URLRequest(url: url!)
         
         let session = URLSession(configuration:
@@ -98,9 +114,10 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 }
                 //Aantal stations van villo, het zijn er 348
                 //print((jsonVillo?.count)!)
+                DispatchQueue.main.async {
                 for villoStation in villoData {
                     //Stationsnaam
-                    let station = NSEntityDescription.insertNewObject(forEntityName: "Station", into: managedContext) as! Station
+                    let station = NSEntityDescription.insertNewObject(forEntityName: "Station", into: self.managedContext!) as! Station
                     station.naam = villoStation["name"] as? String
                     
                     //Latitude en longitude
@@ -114,14 +131,15 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                     
                     //print("Dit is de stationsnaam: \(station.naam!) met latitude \(station.latitude) en longitude \(station.longitude)")
                     do {
-                        try managedContext.save()
+                        try self.managedContext?.save()
                     } catch {
                         fatalError("Failure to save context: \(error)")
                     }
                 }
+                }
                 let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
                 do {
-                    self.opgehaaldeStations = try managedContext.fetch(stationFetch) as! [Station]
+                    self.opgehaaldeStations = try self.managedContext?.fetch(stationFetch) as! [Station]
 //                    print ("uit coredata")
 //                    print(self.opgehaaldeStations[0].naam!)
 //                    print(self.opgehaaldeStations[1].naam!)
@@ -130,27 +148,43 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 catch {
                     fatalError("Failed to fetch stations: \(error)")
                 }
-                DispatchQueue.main.async {
-                    //Annotation op coordinaten locatie van het station plaatsen
-                    for villoStationData in self.opgehaaldeStations {
-                        let annotation = MKPointAnnotation()
-                        annotation.title = villoStationData.naam
-                        annotation.subtitle = "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)"
-                        annotation.coordinate = CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude )
-                        self.mijnMapview.addAnnotation(annotation)
-                        
-                    }
-                }
                 
+                    self.maakAnnotaionsAanOpMap()
+                    self.updateTijdBijRefresh()
+            // print(villoData)
             }
             catch {
             }
         }
         task.resume()
+        
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func maakAnnotaionsAanOpMap(){
+        DispatchQueue.main.async {
+            let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
+            let nieuweOpgehaaldeStations:[Station]
+            do{
+                nieuweOpgehaaldeStations = try self.managedContext?.fetch(stationFetch) as! [Station]
+                //Annotation op coordinaten locatie van het station plaatsen
+                for villoStationData in nieuweOpgehaaldeStations {
+                    let annotation = MKPointAnnotation()
+                    annotation.title = villoStationData.naam
+                    annotation.subtitle = "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)"
+                    annotation.coordinate = CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude )
+                    self.mijnMapview.addAnnotation(annotation)
+                    }
+                
+            
+            }
+            catch{
+                
+            }
+        }
     }
     
     func mapView(_ mapview: MKMapView, didUpdate userLocation: MKUserLocation){
@@ -163,9 +197,9 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
     //Tutorial voor custom annotations
     //https://www.youtube.com/watch?v=936-KHll9Ao
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        
+
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "annotationView")
-       
+
         if annotationView == nil{
             annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "fietsmarker")
             annotationView?.image = UIImage(named: "fietsmarker")
@@ -173,15 +207,15 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             annotationView!.rightCalloutAccessoryView = calloutButton
             annotationView!.sizeToFit()
         }
-        if let title = annotation.title, title == "My Location" {
+        if let title = annotation.title, title == "My Location" || title == "Mijn locatie" || title == "Ma position"{
             annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "user")
              annotationView?.image = UIImage(named: "user")
         }
-        
+
         annotationView?.canShowCallout = true
-        
+
         return annotationView
-       
+
     }
     
     //Tutorial voor het klikken op de annoatations
@@ -208,6 +242,21 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
         toTableViewController.opslagStations = opgehaaldeStations
     }
 
+    func updateTijdBijRefresh(){
+        DispatchQueue.main.async {
+            //Bron voor current time te tonen als men refresht
+            //https://blog.apoorvmote.com/convert-date-to-string-vice-versa-in-swift/
+            let dateformatter = DateFormatter()
+            dateformatter.dateFormat = "MM/dd/yy h:mm a"
+            let now = dateformatter.string(from: NSDate() as Date)
+            self.lblLaatstBijgewerkt?.text = "Laatst bijgewerkt: \(now)"
+        }
+    }
+    
+    //Button table hier zetten en via performsegue with identifier
+    
+    
+    
 
 }
 

@@ -26,6 +26,20 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="IjY-ly-ORH"/>
                                 </connections>
                             </mapView>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yc8-ZR-VGG">
+                                <rect key="frame" x="0.0" y="644" width="375" height="23"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Laatst bijgewerkt:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4zS-6i-DUH">
+                                        <rect key="frame" x="13" y="3" width="349" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.99215686270000003" green="0.82745098039999998" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -41,18 +55,20 @@
                             <barButtonItem systemItem="bookmarks" id="NlC-CS-UMM">
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
-                                    <segue destination="Sbc-L0-Q6j" kind="show" id="ef2-qf-dd1"/>
+                                    <action selector="btnGoToTableController:" destination="BYZ-38-t0r" id="P5S-cL-axQ"/>
+                                    <segue destination="Sbc-L0-Q6j" kind="show" id="ctb-Hg-awO"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="lblLaatstBijgewerkt" destination="4zS-6i-DUH" id="A9w-4z-sqW"/>
                         <outlet property="mijnMapview" destination="uxq-5C-BsM" id="ABn-RY-ra2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="196" y="134"/>
+            <point key="canvasLocation" x="196" y="133.5832083958021"/>
         </scene>
         <!--Table View Controller-->
         <scene sceneID="4g3-6s-n04">

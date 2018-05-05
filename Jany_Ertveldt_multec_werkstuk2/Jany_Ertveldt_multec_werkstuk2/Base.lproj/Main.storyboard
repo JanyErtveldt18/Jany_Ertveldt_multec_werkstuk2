@@ -55,8 +55,7 @@
                             <barButtonItem systemItem="bookmarks" id="NlC-CS-UMM">
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
-                                    <action selector="btnGoToTableController:" destination="BYZ-38-t0r" id="P5S-cL-axQ"/>
-                                    <segue destination="Sbc-L0-Q6j" kind="show" id="ctb-Hg-awO"/>
+                                    <action selector="btnGaNaarTableController:" destination="BYZ-38-t0r" id="Mdx-Li-MY7"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -68,12 +67,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="196" y="133.5832083958021"/>
+            <point key="canvasLocation" x="124" y="134"/>
         </scene>
         <!--Table View Controller-->
         <scene sceneID="4g3-6s-n04">
             <objects>
-                <tableViewController id="Sbc-L0-Q6j" customClass="TableViewController" customModule="Jany_Ertveldt_multec_werkstuk2" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="tableControllerID" id="Sbc-L0-Q6j" customClass="TableViewController" customModule="Jany_Ertveldt_multec_werkstuk2" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="G3j-xB-CBi">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -107,6 +106,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="ueA-49-VOn" kind="show" id="Okk-6f-EPO"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

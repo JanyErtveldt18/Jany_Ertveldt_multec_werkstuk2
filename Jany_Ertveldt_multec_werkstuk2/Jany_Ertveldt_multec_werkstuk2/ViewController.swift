@@ -24,9 +24,6 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
     let managedContext = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext
     
     
-    
-    
-    
 //    https://stackoverflow.com/questions/39920792/deleting-all-data-in-a-core-data-entity-in-swift-3
     @IBAction func btnRefreshCoreData(_ sender: UIBarButtonItem) {
         print("refresh core data")
@@ -54,6 +51,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             fatalError("Failed to delete stations \(error)")
             
         }
+        
         updateTijdBijRefresh()
     }
     
@@ -64,17 +62,16 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             locationManager.startUpdatingLocation()
         }
         
-        
-        
         let launchedBefore = UserDefaults.standard.bool(forKey: "launchedBefore")
         if launchedBefore  {
             maakAnnotaionsAanOpMap()
+            updateTijdBijRefresh()
             print("Not first launch.")
         } else {
-            laadVelloDataIn()
-            
             print("First launch, setting UserDefault.")
             UserDefaults.standard.set(true, forKey: "launchedBefore")
+            laadVelloDataIn()
+            
         }
 
     }
@@ -86,7 +83,6 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
         
         
         let urlRequest = URLRequest(url: url!)
-        
         let session = URLSession(configuration:
             URLSessionConfiguration.default)
         let task = session.dataTask(with: urlRequest) {
@@ -140,10 +136,6 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
                 do {
                     self.opgehaaldeStations = try self.managedContext?.fetch(stationFetch) as! [Station]
-//                    print ("uit coredata")
-//                    print(self.opgehaaldeStations[0].naam!)
-//                    print(self.opgehaaldeStations[1].naam!)
-//                    print(self.opgehaaldeStations[2].naam!)
                 }
                 catch {
                     fatalError("Failed to fetch stations: \(error)")
@@ -151,6 +143,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 
                     self.maakAnnotaionsAanOpMap()
                     self.updateTijdBijRefresh()
+                
             // print(villoData)
             }
             catch {
@@ -185,6 +178,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 
             }
         }
+       
     }
     
     func mapView(_ mapview: MKMapView, didUpdate userLocation: MKUserLocation){
@@ -197,9 +191,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
     //Tutorial voor custom annotations
     //https://www.youtube.com/watch?v=936-KHll9Ao
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "annotationView")
-
         if annotationView == nil{
             annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "fietsmarker")
             annotationView?.image = UIImage(named: "fietsmarker")
@@ -207,15 +199,15 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             annotationView!.rightCalloutAccessoryView = calloutButton
             annotationView!.sizeToFit()
         }
-        if let title = annotation.title, title == "My Location" || title == "Mijn locatie" || title == "Ma position"{
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "user")
-             annotationView?.image = UIImage(named: "user")
+//        if let title = annotation.title, title == "My Location" || title == "Mijn locatie" || title == "Ma position"{
+//            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "user")
+//             annotationView?.image = UIImage(named: "user")
+//        }
+        if annotation is MKUserLocation {
+            return nil
         }
-
         annotationView?.canShowCallout = true
-
         return annotationView
-
     }
     
     //Tutorial voor het klikken op de annoatations
@@ -225,6 +217,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
 //
 //    }
     
+    
     //Bron voor data door te sturen naar een andere controller zonder segue 
  //   https://stackoverflow.com/questions/15270085/pass-data-between-view-controllers-without-segues
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -232,15 +225,24 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             let detailViewConroller = self.storyboard?.instantiateViewController(withIdentifier: "detailViewControllerID") as! DetailViewController
             detailViewConroller.stationNaam = (view.annotation?.title)!
             self.navigationController?.pushViewController(detailViewConroller, animated: true)
-           
         }
     }
     
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let toTableViewController = segue.destination as! TableViewController
-        toTableViewController.opslagStations = opgehaaldeStations
-    }
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        DispatchQueue.main.async {
+//            let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
+//            let nieuweOpgehaaldeStations:[Station]
+//            do{
+//                nieuweOpgehaaldeStations = try self.managedContext?.fetch(stationFetch) as! [Station]
+//                let toTableViewController = segue.destination as! TableViewController
+//                print(nieuweOpgehaaldeStations)
+//                toTableViewController.opslagStations = nieuweOpgehaaldeStations
+//            }catch{
+//
+//            }
+//        }
+//    }
 
     func updateTijdBijRefresh(){
         DispatchQueue.main.async {
@@ -252,8 +254,26 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             self.lblLaatstBijgewerkt?.text = "Laatst bijgewerkt: \(now)"
         }
     }
+
+    @IBAction func btnGaNaarTableController(_ sender: UIBarButtonItem) {
+        gaNaarTableControllerEnVulOp()
+    }
     
-    //Button table hier zetten en via performsegue with identifier
+    func gaNaarTableControllerEnVulOp(){
+        DispatchQueue.main.async {
+            let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
+            let nieuweOpgehaaldeStations:[Station]
+                do{
+                    nieuweOpgehaaldeStations = try self.managedContext?.fetch(stationFetch) as! [Station]
+                    let tableController = self.storyboard?.instantiateViewController(withIdentifier: "tableControllerID") as! TableViewController
+                    tableController.opslagStations = nieuweOpgehaaldeStations
+                    self.navigationController?.pushViewController(tableController, animated: true)
+                }catch{
+                    
+            }
+        }
+        
+    }
     
     
     

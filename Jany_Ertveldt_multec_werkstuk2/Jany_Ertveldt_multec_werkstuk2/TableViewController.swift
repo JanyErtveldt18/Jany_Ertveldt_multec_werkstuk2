@@ -42,8 +42,13 @@ class TableViewController: UITableViewController,UISearchBarDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
-            var splitStationOpTaalArray:Array<Any>
-            splitStationOpTaalArray = (opslagStations[indexPath.row].naam?.components(separatedBy: "/"))!
+        
+        
+//            var splitStationOpTaalArray:Array<Any>
+//            splitStationOpTaalArray = (opslagStations[indexPath.row].naam?.components(separatedBy: "/"))!
+        
+        let splitStationOpNummerArray = opslagStations[indexPath.row].naam?.components(separatedBy: "-")
+        let splitStationOpTaalArray = splitStationOpNummerArray![1].components(separatedBy: "/")
         
             if self.taalApparaat.contains("nl") {
                 print("taal is Nederlands")
@@ -51,14 +56,14 @@ class TableViewController: UITableViewController,UISearchBarDelegate {
                     let nederlands = splitStationOpTaalArray[1]
                     print("groter als 2: \(nederlands)")
                    
-                        cell.textLabel?.text = nederlands as? String
+                        cell.textLabel?.text = nederlands
                         cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
                     
                 }else{
                     let nederlands = splitStationOpTaalArray[0]
                     print("anders: \(nederlands)")
                     
-                        cell.textLabel?.text = nederlands as? String
+                        cell.textLabel?.text = nederlands
                         cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
                     
                 }
@@ -67,8 +72,8 @@ class TableViewController: UITableViewController,UISearchBarDelegate {
                 let frans = splitStationOpTaalArray[0]
                 print("groter als 2: \(frans)")
                
-                    cell.textLabel?.text = frans as? String
-                    cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
+                    cell.textLabel?.text = frans
+                    cell.detailTextLabel?.text = "Nombre de vélo disponible: \(opslagStations[indexPath.row].beschikbareFietsen)"
                 
             }else{
                 print("Verander de taal naar Frans of Nederlands")

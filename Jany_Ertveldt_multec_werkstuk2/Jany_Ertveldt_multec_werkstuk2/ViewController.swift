@@ -170,18 +170,18 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
 //                    annotation.title = villoStationData.naam
 //                    annotation.subtitle = "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)"
 //                    annotation.coordinate = CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude )
-                    
-                    let splitStationOpTaalArray = villoStationData.naam?.components(separatedBy: "/")
+                    let splitStationOpNummerArray = villoStationData.naam?.components(separatedBy: "-")
+                    let splitStationOpTaalArray = splitStationOpNummerArray![1].components(separatedBy: "/")
                     
                     if self.taalApparaat.contains("nl") {
                         print("taal is Nederlands")
-                        if (splitStationOpTaalArray?.count)!>=2{
-                            let nederlands = splitStationOpTaalArray![1]
+                        if (splitStationOpTaalArray.count)>=2{
+                            let nederlands = splitStationOpTaalArray[1]
                             print("groter als 2: \(nederlands)")
                             let annotationPin = MijnAnnotation(title: nederlands, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
                              self.mijnMapview.addAnnotation(annotationPin)
                         }else{
-                            let nederlands = splitStationOpTaalArray![0]
+                            let nederlands = splitStationOpTaalArray[0]
                             print("anders: \(nederlands)")
                             let annotationPin = MijnAnnotation(title: nederlands, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
                              self.mijnMapview.addAnnotation(annotationPin)
@@ -189,7 +189,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                     } else if self.taalApparaat.contains("fr") {
                         print("taal is Frans")
 //                        if (splitStationOpTaalArray?.count)!>=2{
-                            let frans = splitStationOpTaalArray![0]
+                        let frans = splitStationOpTaalArray[0]
                             print("groter als 2: \(frans)")
                             let annotationPin = MijnAnnotation(title: frans, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
                              self.mijnMapview.addAnnotation(annotationPin)

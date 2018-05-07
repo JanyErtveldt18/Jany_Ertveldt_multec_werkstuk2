@@ -9,21 +9,15 @@
 import UIKit
 
 class TableViewController: UITableViewController,UISearchBarDelegate {
-    //Tutorial searchbar
-    //https://www.youtube.com/watch?v=zgP_VHhkroE
+    let taalApparaat = NSLocale.preferredLanguages[0]
     
- 
     var opslagStations:[Station] = []
-    @IBOutlet weak var mySearchbarOutlet: UISearchBar!
     var filterStations = [Station]()
     var isSearching = false
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        mySearchbarOutlet.delegate = self
-        mySearchbarOutlet.returnKeyType = UIReturnKeyType.done
-        mySearchbarOutlet.placeholder = "Zoek jouw station"
         
     }
 
@@ -41,40 +35,61 @@ class TableViewController: UITableViewController,UISearchBarDelegate {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if isSearching {
-            return filterStations.count
-        }
         // #warning Incomplete implementation, return the number of rows
         return opslagStations.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
-
-        if isSearching{
-           cell.textLabel?.text = filterStations[indexPath.row].naam
-            
-        }else{
-            cell.textLabel?.text = opslagStations[indexPath.row].naam
-            cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
-        }
+            let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
+            var splitStationOpTaalArray:Array<Any>
+            splitStationOpTaalArray = (opslagStations[indexPath.row].naam?.components(separatedBy: "/"))!
+        
+            if self.taalApparaat.contains("nl") {
+                print("taal is Nederlands")
+                if (splitStationOpTaalArray.count)>=2{
+                    let nederlands = splitStationOpTaalArray[1]
+                    print("groter als 2: \(nederlands)")
+                   
+                        cell.textLabel?.text = nederlands as? String
+                        cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
+                    
+                }else{
+                    let nederlands = splitStationOpTaalArray[0]
+                    print("anders: \(nederlands)")
+                    
+                        cell.textLabel?.text = nederlands as? String
+                        cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
+                    
+                }
+            } else if self.taalApparaat.contains("fr") {
+                print("taal is Frans")
+                let frans = splitStationOpTaalArray[0]
+                print("groter als 2: \(frans)")
+               
+                    cell.textLabel?.text = frans as? String
+                    cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
+                
+            }else{
+                print("Verander de taal naar Frans of Nederlands")
+            }
+        
+        
+        
+        
+        
+//        if isSearching{
+//           cell.textLabel?.text = filterStations[indexPath.row].naam
+//
+//        }else{
+//            cell.textLabel?.text = opslagStations[indexPath.row].naam
+//            cell.detailTextLabel?.text = "Aantal vrije fietsen: \(opslagStations[indexPath.row].beschikbareFietsen)"
+//        }
 
         return cell
     }
     
-    func searchBar(_ searchBar: UISearchBar,textDidChange searchText: String){
-        if mySearchbarOutlet.text == nil || mySearchbarOutlet.text == ""{
-            isSearching = false
-            view.endEditing(true)
-            tableView.reloadData()
-        }else{
-            isSearching = true
-            filterStations = opslagStations.filter({$0.naam == "S"})
-            tableView.reloadData()
-        }
-    }
-    
+
 
     /*
     // Override to support conditional editing of the table view.
@@ -119,6 +134,7 @@ class TableViewController: UITableViewController,UISearchBarDelegate {
         if let nextvc = segue.destination as? DetailViewController {
             let indexpath = self.tableView.indexPathForSelectedRow!
             nextvc.stationNaam = self.opslagStations[indexpath.row].naam
+            nextvc.aantalBeschikbareFietsen = "\(self.opslagStations[indexpath.row].beschikbareFietsen)"
         }
     }
  

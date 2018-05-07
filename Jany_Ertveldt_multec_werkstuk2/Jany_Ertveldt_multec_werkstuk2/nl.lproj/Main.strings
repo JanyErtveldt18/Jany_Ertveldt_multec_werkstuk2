@@ -10,3 +10,9 @@
 
 /* Class = "UILabel"; text = "Title"; ObjectID = "sCt-vZ-IZa"; */
 "sCt-vZ-IZa.text" = "Title";
+
+/* Class = "UILabel"; text = "Station:"; ObjectID = "CNI-H7-R3v"; */
+"CNI-H7-R3v.text" = "Station:";
+
+/* Class = "UILabel"; text = "Beschikbare fietsen:"; ObjectID = "AVh-BL-u7V"; */
+"AVh-BL-u7V.text" = "Beschikbare fietsen:";

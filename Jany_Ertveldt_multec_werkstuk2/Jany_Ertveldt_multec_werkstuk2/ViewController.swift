@@ -12,6 +12,7 @@ import CoreData
 import MapKit
 
 class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDelegate {
+    let taalApparaat = NSLocale.preferredLanguages[0]
     var opgehaaldeStations:[Station] = []
     var locationManager = CLLocationManager()
     var location : CLLocation!
@@ -31,19 +32,19 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
         let alleAnnotationsOpDeMap = mijnMapview.annotations
         mijnMapview.removeAnnotations(alleAnnotationsOpDeMap)
         
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            else{
-                return
-        }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate
+//            else{
+//                return
+//        }
+//
+//        let managedContext = appDelegate.persistentContainer.viewContext
         let stationFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Station")
         do{
-            let opgehaaldeStations = try managedContext.fetch(stationFetch) as! [Station]
+            let opgehaaldeStations = try managedContext?.fetch(stationFetch) as! [Station]
             
             for station in opgehaaldeStations {
-                managedContext.delete(station)
-                try managedContext.save()
+                managedContext?.delete(station)
+                try managedContext?.save()
             }
              laadVelloDataIn()
         }
@@ -122,7 +123,7 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                     station.longitude = (coordinatesVilloStation!["lng"] as? Double)!
                    
                     //Aantal beschikbare fietsen
-                    station.beschikbareFietsen = (villoStation["available_bikes"] as? Int16)!
+                    station.beschikbareFietsen = (villoStation["available_bikes"] as? Int64)!
                     
                     
                     //print("Dit is de stationsnaam: \(station.naam!) met latitude \(station.latitude) en longitude \(station.longitude)")
@@ -165,11 +166,49 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 nieuweOpgehaaldeStations = try self.managedContext?.fetch(stationFetch) as! [Station]
                 //Annotation op coordinaten locatie van het station plaatsen
                 for villoStationData in nieuweOpgehaaldeStations {
-                    let annotation = MKPointAnnotation()
-                    annotation.title = villoStationData.naam
-                    annotation.subtitle = "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)"
-                    annotation.coordinate = CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude )
-                    self.mijnMapview.addAnnotation(annotation)
+//                    let annotation = MKPointAnnotation()
+//                    annotation.title = villoStationData.naam
+//                    annotation.subtitle = "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)"
+//                    annotation.coordinate = CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude )
+                    
+                    let splitStationOpTaalArray = villoStationData.naam?.components(separatedBy: "/")
+                    
+                    if self.taalApparaat.contains("nl") {
+                        print("taal is Nederlands")
+                        if (splitStationOpTaalArray?.count)!>=2{
+                            let nederlands = splitStationOpTaalArray![1]
+                            print("groter als 2: \(nederlands)")
+                            let annotationPin = MijnAnnotation(title: nederlands, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
+                             self.mijnMapview.addAnnotation(annotationPin)
+                        }else{
+                            let nederlands = splitStationOpTaalArray![0]
+                            print("anders: \(nederlands)")
+                            let annotationPin = MijnAnnotation(title: nederlands, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
+                             self.mijnMapview.addAnnotation(annotationPin)
+                        }
+                    } else if self.taalApparaat.contains("fr") {
+                        print("taal is Frans")
+//                        if (splitStationOpTaalArray?.count)!>=2{
+                            let frans = splitStationOpTaalArray![0]
+                            print("groter als 2: \(frans)")
+                            let annotationPin = MijnAnnotation(title: frans, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
+                             self.mijnMapview.addAnnotation(annotationPin)
+//                        }else{
+//                            let frans = splitStationOpTaalArray![1]
+//                            print("anders: \(frans)")
+//                            let annotationPin = MijnAnnotation(title: frans, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
+//                             self.mijnMapview.addAnnotation(annotationPin)
+//                        }
+                    }else{
+                        print("Verander de taal naar Frans of Nederlands")
+                    }
+                    
+                    
+                    
+                    
+                    
+//                     let annotationPin = MijnAnnotation(title: villoStationData.naam, subtitle: "Aantal vrije fietsen: \(villoStationData.beschikbareFietsen)", coordinate: CLLocationCoordinate2D(latitude:villoStationData.latitude , longitude: villoStationData.longitude ), beschikbareFietsen: villoStationData.beschikbareFietsen)
+//                    self.mijnMapview.addAnnotation(annotationPin)
                     }
                 
             
@@ -178,7 +217,6 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
                 
             }
         }
-       
     }
     
     func mapView(_ mapview: MKMapView, didUpdate userLocation: MKUserLocation){
@@ -223,7 +261,12 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.rightCalloutAccessoryView {
             let detailViewConroller = self.storyboard?.instantiateViewController(withIdentifier: "detailViewControllerID") as! DetailViewController
-            detailViewConroller.stationNaam = (view.annotation?.title)!
+            if let annotation = view.annotation as? MijnAnnotation {
+//                self.performSegue(withIdentifier: "test", sender: annotation.number)
+                
+                detailViewConroller.stationNaam = (view.annotation?.title)!
+                detailViewConroller.aantalBeschikbareFietsen = "\(annotation.beschikbareFietsen!)"
+            }
             self.navigationController?.pushViewController(detailViewConroller, animated: true)
         }
     }

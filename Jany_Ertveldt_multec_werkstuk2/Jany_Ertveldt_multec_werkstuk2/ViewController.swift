@@ -294,7 +294,8 @@ class ViewController: UIViewController,MKMapViewDelegate, CLLocationManagerDeleg
             let dateformatter = DateFormatter()
             dateformatter.dateFormat = "MM/dd/yy h:mm a"
             let now = dateformatter.string(from: NSDate() as Date)
-            self.lblLaatstBijgewerkt?.text = "Laatst bijgewerkt: \(now)"
+            //self.lblLaatstBijgewerkt?.text = "Laatst bijgewerkt: \(now)"
+            self.lblLaatstBijgewerkt?.text = NSLocalizedString("LaatstBijgewerkt:", comment: "") + "\(now)"
         }
     }
 

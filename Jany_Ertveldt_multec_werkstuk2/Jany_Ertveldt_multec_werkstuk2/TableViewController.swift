@@ -73,8 +73,7 @@ class TableViewController: UITableViewController,UISearchBarDelegate {
                 print("groter als 2: \(frans)")
                
                     cell.textLabel?.text = frans
-                    cell.detailTextLabel?.text = "Nombre de vélo disponible: \(opslagStations[indexPath.row].beschikbareFietsen)"
-                
+                    cell.detailTextLabel?.text = NSLocalizedString("AantalVrijeFietsen:", comment: "") + "\(opslagStations[indexPath.row].beschikbareFietsen)"
             }else{
                 print("Verander de taal naar Frans of Nederlands")
             }
